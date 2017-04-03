@@ -1,5 +1,5 @@
-#GHOST: Genre, Happening, or Sentiment Tagger
-#Michael Berezny, Pat Putnam, Sushant Kafle
+'''GHOST: Genre, Happening, or Sentiment Tagger
+Michael Berezny, Pat Putnam, Sushant Kafle'''
 
 """Import"""
 import csv
@@ -20,8 +20,9 @@ punc_strip = str.maketrans('', '', string.punctuation)
 def get_features(sentence):
     features = {}
     bag_of_words=sentence.translate(punc_strip).split(" ")
-    features["Number of Words"] = len(bag_of_words)
+    unique_words=set(word.lower() for word in bag_of_words)
+    features["Number of Tokens"] = len(bag_of_words)
+    features["Number of Types"] = len(unique_words)
+    
 
     return features
-
-
