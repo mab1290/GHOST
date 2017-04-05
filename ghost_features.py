@@ -27,3 +27,16 @@ def has_neg(s):
         return 1
     else:
         return 0
+    
+def percent_pos(s):
+    words = s.translate(punc_strip).split(" ")
+    return len([p for p in words if p in positive])/len(words)
+
+def percent_neg(s):
+    words = s.translate(punc_strip).split(" ")
+    return len([n for n in words if n in negative])/len(words)
+
+def percent_neu(s):
+    words = s.translate(punc_strip).split(" ")
+    return (len(words)-len([p for p in words if p in positive])-len([n for n in words if n in negative]))/len(words)
+    
