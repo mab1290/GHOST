@@ -30,7 +30,7 @@ DATA_HEADERS = ['ID', 'TEXT', 'SENTIMENT', 'CATEGORY', 'GENRE']
 #The data is loaded into a pandas dataframe. It's a neat way to store the data
 #You can query the dataframe pretty easily, use the column names above (DATA_HEADERS)
 #to access the columns. You operate on the result like any other python list.
-dataframe = pd.read_csv(DATA_SRC, sep='\t', index_col=0, header=None, names=DATA_HEADERS)
+dataframe = pd.read_csv(DATA_SRC, sep='\t', index_col=False, header=None, names=DATA_HEADERS)
 
 print ("Number of data points: %d" % len(dataframe))
 print ("Average length of the text (tentative): %f" % np.mean([len(x.split()) for x in dataframe['TEXT']]))
