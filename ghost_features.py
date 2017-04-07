@@ -4,6 +4,8 @@ import string
 from nltk import ne_chunk, pos_tag, word_tokenize
 from nltk.tree import Tree
 import csv
+from nltk.tag.stanford import StanfordNERTagger
+st = StanfordNERTagger('stanford-ner-2016-10-31/classifiers/english.all.3class.distsim.crf.ser.gz', 'stanford-ner-2016-10-31/stanford-ner.jar')
 
 #For removing punctuation
 punc_strip = str.maketrans('', '', string.punctuation)
@@ -81,6 +83,10 @@ def name_entities(s):
              else:
                      continue
      return len(continuous_chunk)
+
+def has_location(s):
+    return st.tag(s.split())
+
  
 
 '''
