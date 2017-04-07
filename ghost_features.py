@@ -1,9 +1,8 @@
 #List of funcitons which return binary or numerical values given a sentence
 '''Imports'''
-import string
+import string, csv, re
 from nltk import ne_chunk, pos_tag, word_tokenize
 from nltk.tree import Tree
-import csv
 from nltk.tag import StanfordNERTagger
 st = StanfordNERTagger('stanford-ner-2016-10-31/classifiers/english.all.3class.distsim.crf.ser.gz', 'stanford-ner-2016-10-31/stanford-ner.jar')
 
@@ -54,12 +53,14 @@ def length(s):
 def count_exc(s):
     return len([c for c in s if c=="!"])
 
+#Checks if sentence has '$'
 def has_dollar(s):
     if "$" in s:
         return 1
     else:
         return 0
-    
+
+#Checks if sentence has "money"
 def has_money(s):
     if "money" in s:
         return 1
@@ -88,7 +89,17 @@ def name_entities(s):
 def has_location(s):
     loc = [blah for blah in st.tag(s.split()) if blah[1]=='LOCATION']
 
- 
+#Checks whether sentece contains a quotatons
+def has_quote(s):
+    comp=re.compile(r'".*"')
+    if comp.search(s):
+        return 1
+    else:
+        return 0
+
+#Returns number of characters
+def chars(s):
+    return len(s)
 
 '''
 #This is just here so I can test functions
