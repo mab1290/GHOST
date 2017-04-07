@@ -4,7 +4,7 @@ import string
 from nltk import ne_chunk, pos_tag, word_tokenize
 from nltk.tree import Tree
 import csv
-from nltk.tag.stanford import StanfordNERTagger
+from nltk.tag import StanfordNERTagger
 st = StanfordNERTagger('stanford-ner-2016-10-31/classifiers/english.all.3class.distsim.crf.ser.gz', 'stanford-ner-2016-10-31/stanford-ner.jar')
 
 #For removing punctuation
@@ -84,8 +84,9 @@ def name_entities(s):
                      continue
      return len(continuous_chunk)
 
+#Checks whether sentence contains a location
 def has_location(s):
-    return st.tag(s.split())
+    loc = [blah for blah in st.tag(s.split()) if blah[1]=='LOCATION']
 
  
 
