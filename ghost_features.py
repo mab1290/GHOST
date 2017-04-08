@@ -2,6 +2,8 @@
 '''Imports'''
 import string, csv, re
 from nltk import ne_chunk, pos_tag, word_tokenize
+from textblob import TextBlob as TB
+from textblob import Word
 from nltk.tree import Tree
 from nltk.tag import StanfordNERTagger
 st = StanfordNERTagger('stanford-ner-2016-10-31/classifiers/english.all.3class.distsim.crf.ser.gz', 'stanford-ner-2016-10-31/stanford-ner.jar')
@@ -12,6 +14,19 @@ punc_strip = str.maketrans('', '', string.punctuation)
 #Reads in list of positive and negative words
 positive=[p.replace("\n", "") for p in open('positive-words.txt').readlines()[35:]]
 negative=[n.replace("\n", "") for n in open('negative-words.txt').readlines()[35:]]
+
+#NOT A FEATURE FUNCTION
+#Used by other functions. Converts a Penn corpus tag into a Wordnet tag.
+def _penn_to_wordnet(tag):
+    if tag in ("NN", "NNS", "NNP", "NNPS"):
+        return "n"
+    if tag in ("JJ", "JJR", "JJS"):
+        return "a"
+    if tag in ("VB", "VBD", "VBG", "VBN", "VBP", "VBZ"):
+        return "v"
+    if tag in ("RB", "RBR", "RBS"):
+        return "r"
+    return None
 
 #Checks if sentence has any positive words  
 def has_pos(s):
@@ -85,13 +100,19 @@ def name_entities(s):
                      continue
      return len(continuous_chunk)
 
-#Checks whether sentence contains a location
+'''#Checks whether sentence contains a location
+#NEVER GOT THE JAVA TO WORK
 def has_location(s):
     loc = [blah for blah in st.tag(s.split()) if blah[1]=='LOCATION']
+    if len(loc)>0:
+        return 1
+    else:
+        return 0
+'''
 
 #Checks whether sentece contains a quotatons
 def has_quote(s):
-    comp=re.compile(r'".*"')
+    comp=re.compile(r'".+"')
     if comp.search(s):
         return 1
     else:
@@ -100,6 +121,36 @@ def has_quote(s):
 #Returns number of characters
 def chars(s):
     return len(s)
+
+#Returns the percentagenumber of capital words
+def cap_words(s):
+    words = s.translate(punc_strip).split(" ")
+    return len([word for word in words if word.isupper()])/len(words)
+
+#Returns the percentage of capital letters
+def cap_chars(s):
+    return len([char for char in s if char.isupper()])/len(s)
+
+#Checks for the "go" lemma, should recognize 'going', 'went', etc.
+def has_go(s):
+    lemmas=[]
+    for wt in TB(s).tags:
+        lemmas.append(Word(wt[0]).lemmatize(_penn_to_wordnet(wt[1])))
+    if 'go' in lemmas:
+        return 1
+    else:
+        return 0
+    
+#Checks whether sentece contains more than two adjacent repeated letters
+#Doesn't really occur in English, could indicate exaggerated emotions e.g. "booooooring"
+def has_repeats(s):
+    comp=re.compile(r"(\w)\1{2,}")
+    if comp.search(s):
+        return 1
+    else:
+        return 0
+
+
 
 '''
 #This is just here so I can test functions
