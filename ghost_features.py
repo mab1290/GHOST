@@ -100,15 +100,14 @@ def name_entities(s):
                      continue
      return len(continuous_chunk)
 
-'''#Checks whether sentence contains a location
-#NEVER GOT THE JAVA TO WORK
+#Checks whether sentence contains a location
 def has_location(s):
     loc = [blah for blah in st.tag(s.split()) if blah[1]=='LOCATION']
     if len(loc)>0:
         return 1
     else:
         return 0
-'''
+
 
 #Checks whether sentece contains a quotatons
 def has_quote(s):
@@ -150,7 +149,34 @@ def has_repeats(s):
     else:
         return 0
 
+#Returns the number of nouns in a sentences    
+def count_nouns(s):
+    return len([w for w in TB(s).tags if w[1]=="NN" or "NNS"])
 
+#Returns the number of proper nouns in a sentences    
+def count_Pnouns(s):
+    return len([w for w in TB(s).tags if w[1]=="NNP" or "NNPS"])
+
+#Returns the number of adjectives in a sentences    
+def count_adj(s):
+    return len([w for w in TB(s).tags if w[1]=="JJ" or "JJR"])
+
+#Returns the number of superlatives in a sentences    
+def count_super(s):
+    return len([w for w in TB(s).tags if w[1]=="JJS"])
+
+
+#Returns the number of verbs in a sentences    
+def count_verb(s):
+    return len([w for w in TB(s).tags if w[1]=="VB" or "VBZ" or "VBP" or "VBD" or "VBN" or "VBG"])
+
+#Returns the number of personal pronouns in a sentences    
+def count_pro(s):
+    return len([w for w in TB(s).tags if w[1]=="PRP"])
+
+#Returns the TextBlob sentiment polarity between -1 and 1 where -1 is the msot negative
+def blob_sent(s):
+    return TB(s).sentiment.polarity
 
 '''
 #This is just here so I can test functions
