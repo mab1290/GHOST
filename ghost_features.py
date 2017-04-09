@@ -1,6 +1,6 @@
 #List of funcitons which return binary or numerical values given a sentence
 '''Imports'''
-import string, csv, re, os, sys
+import string, re, os, sys
 from nltk import ne_chunk, pos_tag, word_tokenize
 from nltk.tree import Tree
 from nltk.tag import StanfordNERTagger
@@ -217,13 +217,3 @@ def process_features(string):
     features['textblob_sentiment_polarity'] = _blob_sent(string)
 
     return features
-
-'''
-#This is just here so I can test functions
-data=[]
-with open("PS3_training_data.txt", "r") as f:
-    reader=csv.reader(f,delimiter='\t')
-    for case in reader:
-        d={"ID":case[0], "Sentence":case[1], "Sentiment":case[2], "Event":case[3], "Genre":case[4]}
-        data.append(d)
-'''
