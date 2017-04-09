@@ -6,7 +6,9 @@ from textblob import TextBlob as TB
 from textblob import Word
 from nltk.tree import Tree
 from nltk.tag import StanfordNERTagger
-st = StanfordNERTagger('stanford-ner-2016-10-31/classifiers/english.all.3class.distsim.crf.ser.gz', 'stanford-ner-2016-10-31/stanford-ner.jar')
+st = StanfordNERTagger(
+    './vendor/stanford-ner-2016-10-31/classifiers/english.all.3class.distsim.crf.ser.gz',
+    './vendor/stanford-ner-2016-10-31/stanford-ner.jar')
 
 #For removing punctuation
 punc_strip = str.maketrans('', '', string.punctuation)
