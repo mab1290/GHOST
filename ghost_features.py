@@ -1,11 +1,18 @@
 #List of funcitons which return binary or numerical values given a sentence
 '''Imports'''
-import string, csv, re
+import string, csv, re, os, sys
 from nltk import ne_chunk, pos_tag, word_tokenize
-from textblob import TextBlob as TB
-from textblob import Word
 from nltk.tree import Tree
 from nltk.tag import StanfordNERTagger
+
+parent_dir = os.path.abspath(os.path.dirname(__file__))
+vendor_dir = os.path.join(parent_dir, 'vendor')
+
+sys.path.append(vendor_dir)
+
+from textblob import TextBlob as TB
+from textblob import Word
+
 st = StanfordNERTagger(
     './vendor/stanford-ner-2016-10-31/classifiers/english.all.3class.distsim.crf.ser.gz',
     './vendor/stanford-ner-2016-10-31/stanford-ner.jar')
