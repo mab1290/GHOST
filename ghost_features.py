@@ -53,20 +53,38 @@ def _has_neg(s):
     else:
         return 0
 
-#Returns percentage of positive words    
+#Returns category based on the percentage of positive words    
 def _percent_pos(s):
     words = s.translate(punc_strip).split(" ")
-    return len([p for p in words if p in positive])/len(words)
+    pp = len([p for p in words if p in positive])/len(words)
+    if pp==0:
+        return "No Positive"
+    elif pp<0.25:
+        return "Some Positive"
+    else:
+        return "Much Positive"
 
-#Returns percentage of negative words
+#Returns category based on the percentage of negative words
 def _percent_neg(s):
     words = s.translate(punc_strip).split(" ")
-    return len([n for n in words if n in negative])/len(words)
+    pn=len([n for n in words if n in negative])/len(words)
+    if pn==0:
+        return "No Negative"
+    elif pn<0.25:
+        return "Some Negative"
+    else:
+        return "Much Negative"
 
-#Returns percentage of neutral words
+#Returns category based on the percentage of neutral words
 def _percent_neu(s):
     words = s.translate(punc_strip).split(" ")
-    return (len(words)-len([p for p in words if p in positive])-len([n for n in words if n in negative]))/len(words)
+    pneu=(len(words)-len([p for p in words if p in positive])-len([n for n in words if n in negative]))/len(words)
+    if pneu==1:
+        return "All Neutral"
+    elif pneu>0.5:
+        return "Mostly Neutral"
+    else:
+        return "Less than Mostly Neutral"
 
 #Returns Sentence length
 def _length(s):
@@ -130,14 +148,14 @@ def _has_quote(s):
 def _chars(s):
     return len(s)
 
-#Returns the percentagenumber of capital words
+#Returns the number of capital words
 def _cap_words(s):
     words = s.translate(punc_strip).split(" ")
-    return len([word for word in words if word.isupper()])/len(words)
+    return len([word for word in words if word.isupper()])
 
-#Returns the percentage of capital letters
+#Returns the number of capital letters
 def _cap_chars(s):
-    return len([char for char in s if char.isupper()])/len(s)
+    return len([char for char in s if char.isupper()])
 
 #Checks for the "go" lemma, should recognize 'going', 'went', etc.
 def _has_go(s):
@@ -173,7 +191,6 @@ def _count_adj(s):
 #Returns the number of superlatives in a sentences    
 def _count_super(s):
     return len([w for w in TB(s).tags if w[1]=="JJS"])
-
 
 #Returns the number of verbs in a sentences    
 def _count_verb(s):
