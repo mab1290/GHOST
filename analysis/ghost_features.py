@@ -13,10 +13,6 @@ sys.path.append(vendor_dir)
 from textblob import TextBlob as TB
 from textblob import Word
 
-st = StanfordNERTagger(
-    './vendor/stanford-ner-2016-10-31/classifiers/english.all.3class.distsim.crf.ser.gz',
-    './vendor/stanford-ner-2016-10-31/stanford-ner.jar')
-
 #For removing punctuation
 punc_strip = str.maketrans('', '', string.punctuation)
 
@@ -126,14 +122,6 @@ def _name_entities(s):
              else:
                      continue
      return len(continuous_chunk)
-
-#Checks whether sentence contains a location
-def _has_location(s):
-    loc = [blah for blah in st.tag(s.split()) if blah[1]=='LOCATION']
-    if len(loc)>0:
-        return 1
-    else:
-        return 0
 
 
 #Checks whether sentece contains a quotatons
