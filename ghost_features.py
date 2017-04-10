@@ -185,7 +185,17 @@ def _count_pro(s):
 
 #Returns the TextBlob sentiment polarity between -1 and 1 where -1 is the msot negative
 def _blob_sent(s):
-    return TB(s).sentiment.polarity
+    sent=TB(s).sentiment.polarity
+    if sent>0.5:
+        return "Very Positive"
+    elif sent>0.0:
+        return "Positive"
+    elif sent==0.0:
+        return "Neutral"
+    elif sent>-0.5:
+        return "Negative"
+    else:
+        return "Very Negative"
 
 
 def process_features(string):
