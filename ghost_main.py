@@ -29,6 +29,7 @@ CLASSIFIERS = {'GENRE': 'classifiers/genre.clf.pkl', 'SENTIMENT': 'classifiers/s
 
 #TRAINING DATA LOAD
 dataframe = pd.read_csv(DATA_SRC, sep='\t', index_col=False, header=None, names=DATA_HEADERS)
+cdataframe = dataframe.loc[dataframe['GENRE'] == 'GENRE_A']
 
 #TEST DATA SRC
 assert len(sys.argv) > 1 , "Error\npython ghost_main.py <test data src> <output filename>"
@@ -105,7 +106,6 @@ if os.path.isfile(CLASSIFIERS['CATEGORY']):
     print ("Loading complete!")
 else:
     print ("Preparing the category classifier")
-    cdataframe = dataframe.loc[dataframe['GENRE'] == 'GENRE_A']
     Xs = clean_texts(cdataframe['TEXT'])
     Ys = cdataframe['CATEGORY']
 
@@ -128,31 +128,39 @@ else:
     category_clf = joblib.load(CLASSIFIERS['CATEGORY']) 
     print ("Loading complete!")
 
-cdataframe = dataframe.loc[dataframe['GENRE'] == 'GENRE_A']
-print ("Calculating the training accuracy of the models")
-pred_genre = genre_clf.predict(dataframe['TEXT'])
-pred_sentiment = sentiment_clf.predict(dataframe['TEXT'])
-pred_category = category_clf.predict(cdataframe['TEXT'])
-
-train_eval_genre = sum(1 for x,y in zip(pred_genre,dataframe['GENRE']) if x == y) / len(pred_genre)
-train_eval_sentiment = sum(1 for x,y in zip(pred_sentiment, dataframe['SENTIMENT']) if x == y) / len(pred_sentiment)
-train_eval_category = sum(1 for x,y in zip(pred_category,cdataframe['CATEGORY']) if x == y) / len(pred_category)
-print ("Genre: %f" % train_eval_genre)
-print ("Sentiment: %f" % train_eval_sentiment)
-print ("Category: %f" % train_eval_category)
 
 #Run the classifiers on the test data and save it.
 #Loading the test data into the dataframe
 test_dataframe = pd.read_csv(TEST_DATA_SRC, sep='\t', index_col=False, header=None, names=DATA_HEADERS)
+test_cdataframe = test_dataframe.loc[test_dataframe['GENRE'] == 'GENRE_A']
 
-#perform some evaluations (for later)
+# Evalation 
+print ("Calculating the training accuracy of the models")
+pred_genre = genre_clf.predict(test_dataframe['TEXT'])
+pred_sentiment = sentiment_clf.predict(test_dataframe['TEXT'])
+pred_category = category_clf.predict(test_cdataframe['TEXT'])
 
-test_dataframe[DATA_HEADERS[2]] = sentiment_clf.predict(test_dataframe['TEXT'])
-test_dataframe[DATA_HEADERS[3]] = category_clf.predict(test_dataframe['TEXT'])
-test_dataframe[DATA_HEADERS[4]] = genre_clf.predict(test_dataframe['TEXT'])
+test_eval_genre = sum(1 for x,y in zip(pred_genre, test_dataframe['GENRE']) if x.strip() == y.strip()) / len(pred_genre)
+test_eval_sentiment = sum(1 for x,y in zip(pred_sentiment, test_dataframe['SENTIMENT']) if x.strip() == y.strip()) / len(pred_sentiment)
+test_eval_category = sum(1 for x,y in zip(pred_category, test_cdataframe['CATEGORY']) if x.strip() == y.strip()) / len(pred_category)
+print ("Genre: %f" % test_eval_genre)
+print ("Sentiment: %f" % test_eval_sentiment)
+print ("Category: %f" % test_eval_category)
 
-test_dataframe.to_csv(OUTFILE_SRC, sep='\t', header=False, index=False)
 
+# Output
+output_dataframe = test_dataframe[['ID', 'TEXT', 'GENRE']].copy()
+output_dataframe.rename(columns={'GENRE':'GIVEN_GENRE'}, inplace=True)
 
+# Add 'NONE' for items in GENRE_B
+for index, row in output_dataframe.iterrows():
+    if row['GIVEN_GENRE'] == 'GENRE_B':
+        pred_category = np.insert(pred_category, index, 'NONE')
 
+output_dataframe[DATA_HEADERS[2]] = pred_sentiment
+output_dataframe[DATA_HEADERS[3]] = pred_category
+output_dataframe[DATA_HEADERS[4]] = pred_genre
 
+output_dataframe.drop(['GIVEN_GENRE'], axis=1, inplace=True)
+
+output_dataframe.to_csv(OUTFILE_SRC, sep='\t', header=False, index=False)
