@@ -6,7 +6,7 @@ from nltk.tree import Tree
 from nltk.tag import StanfordNERTagger
 
 parent_dir = os.path.abspath(os.path.dirname(__file__))
-vendor_dir = os.path.join(parent_dir, '../vendor')
+vendor_dir = os.path.join(parent_dir, 'vendor')
 
 sys.path.append(vendor_dir)
 
@@ -17,8 +17,8 @@ from textblob import Word
 punc_strip = str.maketrans('', '', string.punctuation)
 
 #Reads in list of positive and negative words
-positive=[p.replace("\n", "") for p in open('../vendor/positive-words.txt').readlines()[35:]]
-negative=[n.replace("\n", "") for n in open('../vendor/negative-words.txt').readlines()[35:]]
+positive=[p.replace("\n", "") for p in open('vendor/positive-words.txt').readlines()[35:]]
+negative=[n.replace("\n", "") for n in open('vendor/negative-words.txt').readlines()[35:]]
 
 QUOTES_REGEX = re.compile(r'".+"')
 REPEATS_REGEX = re.compile(r"(\w)\1{2,}")

@@ -1,6 +1,6 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_extraction import DictVectorizer
-from ghost_features import *
+from analysis.ghost_features import *
 
 class HandCraftedFeatureExtractor(BaseEstimator, TransformerMixin):
 
