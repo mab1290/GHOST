@@ -54,31 +54,31 @@ def _has_neg(words):
 def _percent_pos(words, len_of_words):
     pp = len([p for p in words if p in positive])/len_of_words
     if pp==0:
-        return "No Positive"
+        return "percent_pos_no_pos"
     elif pp<0.25:
-        return "Some Positive"
+        return "percent_pos_some_pos"
     else:
-        return "Much Positive"
+        return "percent_pos_much_pos"
 
 #Returns category based on the percentage of negative words
 def _percent_neg(words, len_of_words):
     pn=len([n for n in words if n in negative])/len_of_words
     if pn==0:
-        return "No Negative"
+        return "percent_neg_no_neg"
     elif pn<0.25:
-        return "Some Negative"
+        return "percent_neg_some_neg"
     else:
-        return "Much Negative"
+        return "percent_neg_much_neg"
 
 #Returns category based on the percentage of neutral words
 def _percent_neu(words, len_of_words):
     pneu=(len(words)-len([p for p in words if p in positive])-len([n for n in words if n in negative]))/len_of_words
     if pneu==1:
-        return "All Neutral"
+        return "percent_neu_all_neu"
     elif pneu>0.5:
-        return "Mostly Neutral"
+        return "percent_neu_mostly_neu"
     else:
-        return "Less than Mostly Neutral"
+        return "percent_neu_less_neu"
 
 #Returns the number of "!" in a sentence
 def _count_exc(s):
@@ -183,15 +183,15 @@ def _count_pro(tags):
 def _blob_sent(s):
     sent=TB(s).sentiment.polarity
     if sent>0.5:
-        return "Very Positive"
+        return "blob_sent_mostly_pos"
     elif sent>0.0:
-        return "Positive"
+        return "blob_sent_pos"
     elif sent==0.0:
-        return "Neutral"
+        return "blob_sent_neu"
     elif sent>-0.5:
-        return "Negative"
+        return "blob_sent_neg"
     else:
-        return "Very Negative"
+        return "blob_sent_mostly_neg"
 
 
 def process_features(string):
@@ -201,11 +201,9 @@ def process_features(string):
 
     features = {}
 
+    # numerical
     features['has_pos_word'] = _has_pos(words)
     features['has_neg_word'] = _has_neg(words)
-    features['percent_pos_words'] = _percent_pos(words, len_of_words)
-    features['percent_neg_words'] = _percent_neg(words, len_of_words)
-    features['percent_neu_words'] = _percent_neu(words, len_of_words)
     features['length'] = len_of_words
     features['count_exclamation_mark'] = _count_exc(string)
     features['has_dollar_sign'] = _has_dollar(string)
@@ -223,6 +221,11 @@ def process_features(string):
     features['count_of_superlatives'] = _count_super(tags)
     features['count_of_verbs'] = _count_verb(tags)
     features['count_of_pronouns'] = _count_pro(tags)
-    features['textblob_sentiment_polarity'] = _blob_sent(string)
 
+    # categorical
+    features[_blob_sent(string)] = 1
+    features[_percent_pos(words, len_of_words)] = 1
+    features[_percent_neg(words, len_of_words)] = 1
+    features[_percent_neu(words, len_of_words)] = 1
+    
     return features
