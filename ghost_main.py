@@ -28,7 +28,7 @@ from collections import Counter
 
 DATA_SRC = "PS3_training_data.txt"
 DATA_HEADERS = ['ID', 'TEXT', 'SENTIMENT', 'CATEGORY', 'GENRE']
-TASKS = ['GENRE', 'SENTIMENT', 'CATEGORY']
+TASKS = ['SENTIMENT', 'CATEGORY', 'GENRE']
 
 #DATA LOAD
 ###This comment can be removed once read!
