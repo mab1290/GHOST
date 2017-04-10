@@ -41,6 +41,8 @@ print ("Number of data points: %d" % len(dataframe))
 print ("Average length of the text (tentative): %f" % np.mean([len(x.split()) for x in dataframe['TEXT']]))
 print ("(Sanity check) Sample output:", dataframe.iloc[2]['TEXT'])
 
+output_df = dataframe[['ID', 'TEXT', 'GENRE']].copy()
+output_df.rename(columns={'GENRE':'GIVEN_GENRE'}, inplace=True)
 
 #TRAIN-TEST SPLIT
 ##The test_data will not be touched during any part of training and tunning.
@@ -105,17 +107,20 @@ for task in TASKS:
 
     if task == 'CATEGORY':
         y_train = train_data_cat[task]
-        y_test = test_data_cat[task]
-
         X_train = vectorizer.fit_transform(train_data_cat['TEXT'])
+        
         X_test = vectorizer.transform(test_data_cat['TEXT'])
+
+        _ = output_df.loc[output_df['GIVEN_GENRE'] == 'GENRE_A']['TEXT']
+        X_output = vectorizer.transform(_)
 
     else:            
         y_train = train_data[task]
-        y_test = test_data[task]
-
         X_train = vectorizer.fit_transform(train_data['TEXT'])
+
         X_test = vectorizer.transform(test_data['TEXT'])
+        X_output = vectorizer.transform(output_df['TEXT'])
+
 
     #FEATURE REDUCTION
     ##Since we are working with words, and their counts (tfdif) the feature vector
@@ -130,6 +135,7 @@ for task in TASKS:
     lda = LinearDiscriminantAnalysis(shrinkage='auto')
     X_train = chi_squared.fit_transform(X_train, y_train)
     X_test = chi_squared.transform(X_test)
+    X_output = chi_squared.transform(X_output)
 
     feature_info = vectorizer.get_feature_names()
     feature_names = [feature_info[i] for i in chi_squared.get_support(indices=True)]
@@ -172,3 +178,23 @@ for task in TASKS:
         kfold = model_selection.KFold(n_splits=10, random_state=seed)
         results = model_selection.cross_val_score(classifier, X_train, y_train, cv=kfold)
         print("K-fold cross-validation accuracy (mean): %f" % results.mean())
+    classifier = MajorityVotingClassifier.fit(X_train, y_train)
+
+    predictions = classifier.predict(X_output)
+    
+    if task == 'CATEGORY':
+
+        for index, row in output_df.iterrows():
+            if row['GIVEN_GENRE'] == 'GENRE_B':
+                predictions = np.insert(predictions, index, 'NONE')
+
+        output_df[task] = pd.Series(predictions)
+
+    else:
+        output_df[task] = pd.Series(predictions)
+
+print("Exporting output to ghost_output.txt")
+output_df.drop(['GIVEN_GENRE'], axis=1, inplace=True)
+
+output_df.to_csv('ghost_output.txt', sep='\t', header=False, index=False)
+
