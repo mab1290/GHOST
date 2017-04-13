@@ -163,4 +163,4 @@ output_dataframe[DATA_HEADERS[4]] = pred_genre
 
 output_dataframe.drop(['GIVEN_GENRE'], axis=1, inplace=True)
 
-output_dataframe.to_csv(OUTFILE_SRC, sep='\t', header=False, index=False)
+output_dataframe.to_csv(OUTFILE_SRC, sep='\t', header=False, index=False, encoding='utf-8')
